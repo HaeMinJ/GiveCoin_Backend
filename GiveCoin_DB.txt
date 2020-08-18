@@ -1,0 +1,169 @@
+﻿-- 테이블 순서는 관계를 고려하여 한 번에 실행해도 에러가 발생하지 않게 정렬되었습니다.
+
+-- User Table Create SQL
+CREATE TABLE User
+(
+    `userSeq`          INT             NOT NULL    AUTO_INCREMENT COMMENT '사용자번호', 
+    `email`            VARCHAR(45)     NOT NULL    COMMENT '이메일', 
+    `name`             VARCHAR(45)     NOT NULL    COMMENT '이름', 
+    `password`         VARCHAR(200)    NOT NULL    COMMENT '비밀번호', 
+    `profileImageUrl`  VARCHAR(200)    NOT NULL    COMMENT '사진', 
+    `phone`            VARCHAR(45)     NOT NULL    COMMENT '전화번호', 
+    `userType`         TINYINT         NOT NULL    COMMENT '사용자 유형', 
+    `coinAvailable`    DOUBLE          NOT NULL    COMMENT '코인보유량', 
+    `signTime`         BIGINT(13)      NOT NULL    COMMENT '회원가입시간', 
+    `accessToken`      VARCHAR(45)     NOT NULL    COMMENT '토큰', 
+    `walletHash`       VARCHAR(100)    NOT NULL    COMMENT '암호화폐 지갑 주소', 
+    PRIMARY KEY (userSeq)
+);
+
+ALTER TABLE User COMMENT '회원';
+
+
+-- User Table Create SQL
+CREATE TABLE Project
+(
+    `projectSeq`       INT            NOT NULL    AUTO_INCREMENT COMMENT '프로젝트 번호', 
+    `title`            VARCHAR(45)    NOT NULL    COMMENT '제목', 
+    `content`          TEXT           NOT NULL    COMMENT '내용', 
+    `projectCategory`  INT            NOT NULL    COMMENT '종류', 
+    `charityName`      VARCHAR(45)    NOT NULL    COMMENT '단체명', 
+    `updateTime`       BIGINT(13)     NOT NULL    COMMENT '업데이트 날짜', 
+    `views`            INT            NOT NULL    COMMENT '조회수', 
+    `userSeq`          INT            NOT NULL    COMMENT '사용자번호', 
+    PRIMARY KEY (projectSeq)
+);
+
+ALTER TABLE Project COMMENT '프로젝트';
+
+ALTER TABLE Project
+    ADD CONSTRAINT FK_Project_userSeq_User_userSeq FOREIGN KEY (userSeq)
+        REFERENCES User (userSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- User Table Create SQL
+CREATE TABLE Budget
+(
+    `userSeq`          INT             NOT NULL    COMMENT '사용자번호', 
+    `exchangeTime`     BIGINT(13)      NOT NULL    COMMENT '환전날짜', 
+    `price`            VARCHAR(45)     NOT NULL    COMMENT '금액', 
+    `content`          VARCHAR(45)     NOT NULL    COMMENT '내용', 
+    `projectSeq`       INT             NOT NULL    COMMENT '프로젝트 번호', 
+    `clientName`       VARCHAR(45)     NOT NULL    COMMENT '거래처', 
+    `receiptImageUrl`  VARCHAR(200)    NOT NULL    COMMENT '영수증', 
+    PRIMARY KEY (userSeq)
+);
+
+ALTER TABLE Budget COMMENT '예산서';
+
+ALTER TABLE Budget
+    ADD CONSTRAINT FK_Budget_projectSeq_Project_projectSeq FOREIGN KEY (projectSeq)
+        REFERENCES Project (projectSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE Budget
+    ADD CONSTRAINT FK_Budget_userSeq_User_userSeq FOREIGN KEY (userSeq)
+        REFERENCES User (userSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- User Table Create SQL
+CREATE TABLE Donor
+(
+    `userSeq`   INT            NOT NULL    COMMENT '사용자번호', 
+    `nickName`  VARCHAR(45)    NOT NULL    COMMENT '별명', 
+    `gender`    VARCHAR(45)    NOT NULL    COMMENT '성별', 
+    PRIMARY KEY (userSeq)
+);
+
+ALTER TABLE Donor COMMENT '기부자';
+
+ALTER TABLE Donor
+    ADD CONSTRAINT FK_Donor_userSeq_User_userSeq FOREIGN KEY (userSeq)
+        REFERENCES User (userSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- User Table Create SQL
+CREATE TABLE Charity
+(
+    `userSeq`      INT            NOT NULL    COMMENT '사용자번호', 
+    `charityName`  VARCHAR(45)    NOT NULL    COMMENT '단체명', 
+    `intro`        TEXT           NOT NULL    COMMENT '후원단체 소개', 
+    PRIMARY KEY (userSeq)
+);
+
+ALTER TABLE Charity COMMENT '후원단체';
+
+ALTER TABLE Charity
+    ADD CONSTRAINT FK_Charity_userSeq_User_userSeq FOREIGN KEY (userSeq)
+        REFERENCES User (userSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- User Table Create SQL
+CREATE TABLE ExchangeList
+(
+    `userSeq`  INT            NOT NULL    COMMENT '사용자번호', 
+    `price`    VARCHAR(45)    NOT NULL    COMMENT '금액', 
+    `date`     VARCHAR(45)    NOT NULL    COMMENT '환전날짜', 
+    `type`     TINYINT        NOT NULL    COMMENT '환전유형', 
+    PRIMARY KEY (userSeq)
+);
+
+ALTER TABLE ExchangeList COMMENT '환전 내역';
+
+ALTER TABLE ExchangeList
+    ADD CONSTRAINT FK_ExchangeList_userSeq_User_userSeq FOREIGN KEY (userSeq)
+        REFERENCES User (userSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- User Table Create SQL
+CREATE TABLE DonationList
+(
+    `donationSeq`   INT           NOT NULL    COMMENT '기부내역 번호', 
+    `userSeq`       INT           NOT NULL    COMMENT '사용자번호(기부자)', 
+    `projectSeq`    INT           NOT NULL    COMMENT '프로젝트번호', 
+    `coin`          DOUBLE        NOT NULL    COMMENT '기부한 금액만큼의 코인', 
+    `donationTime`  BIGINT(13)    NOT NULL    COMMENT '기부날짜', 
+    PRIMARY KEY (donationSeq)
+);
+
+ALTER TABLE DonationList COMMENT '기부자의 기부 내역';
+
+ALTER TABLE DonationList
+    ADD CONSTRAINT FK_DonationList_projectSeq_Project_projectSeq FOREIGN KEY (projectSeq)
+        REFERENCES Project (projectSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE DonationList
+    ADD CONSTRAINT FK_DonationList_userSeq_User_userSeq FOREIGN KEY (userSeq)
+        REFERENCES User (userSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- User Table Create SQL
+CREATE TABLE SearchHistory
+(
+    `userSeq`        INT            NOT NULL    COMMENT '사용자번호', 
+    `searchContent`  VARCHAR(45)    NOT NULL    COMMENT '검색기록', 
+    `searchTime`     BIGINT(13)     NOT NULL    COMMENT '검색날짜', 
+    PRIMARY KEY (userSeq)
+);
+
+ALTER TABLE SearchHistory COMMENT '검색기록';
+
+ALTER TABLE SearchHistory
+    ADD CONSTRAINT FK_SearchHistory_userSeq_User_userSeq FOREIGN KEY (userSeq)
+        REFERENCES User (userSeq) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+
+-- User Table Create SQL
+CREATE TABLE Notice
+(
+    `title`         VARCHAR(45)    NOT NULL    COMMENT '제목', 
+    `content`       VARCHAR(45)    NOT NULL    COMMENT '내용', 
+    `noticeNum`     INT            NOT NULL    AUTO_INCREMENT COMMENT '공지글 번호', 
+    `isImportance`  INT            NOT NULL    COMMENT '중요', 
+    `time`          BIGINT(13)     NOT NULL    COMMENT '공지날짜', 
+    `views`         INT            NOT NULL    COMMENT '조회수', 
+    PRIMARY KEY (noticeNum)
+);
+
+ALTER TABLE Notice COMMENT '공지사항';
+
+
